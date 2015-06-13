@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import org.eggiecode.rummikub.controllers.AnimationsController;
 import org.eggiecode.rummikub.controllers.FontController;
 import org.eggiecode.rummikub.controllers.InputController;
+import org.eggiecode.rummikub.controllers.RunnikubController;
 import org.eggiecode.rummikub.controllers.SettingsController;
 import org.eggiecode.rummikub.view.GameState;
 import org.eggiecode.rummikub.view.StartState;
@@ -19,12 +20,16 @@ public class Game extends StateBasedGame {
 	SettingsController settingsController;
 	InputController inputController;
 	FontController fontController;
+	
+	RunnikubController runnikubController;
+	
 	public Game(String name) {
 		super(name);
 		animationsController = new AnimationsController();
 		settingsController = new SettingsController();
 		inputController = new InputController(this);
 		fontController = new FontController();
+		runnikubController = new RunnikubController();
 		
 		this.addState(new StartState());
 		this.addState(new GameState());
@@ -73,6 +78,8 @@ public class Game extends StateBasedGame {
 		return fontController;
 	} 
 	
-	
+	public RunnikubController getRunnibkubController() {
+		return runnikubController;
+	}
 
 }

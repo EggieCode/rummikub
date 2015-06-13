@@ -10,7 +10,7 @@ public class Client {
 		AppGameContainer appgc;
 		try {
 			appgc = new AppGameContainer(new Game(gamename));
-            appgc.setDisplayMode(960,720, false);
+            appgc.setDisplayMode(1200,900, false);
             appgc.start();
 		} catch (SlickException e) {
 			// TODO Auto-generated catch block

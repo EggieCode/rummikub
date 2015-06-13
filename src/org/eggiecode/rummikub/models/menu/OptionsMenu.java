@@ -15,7 +15,6 @@ public class OptionsMenu extends Menu implements GameActionListener {
 	boolean creditMenuSelected = false;
 	MainMenu mainMenu;
 	AudioMenu audioMenu;
-	Image marnix;
 	float sizeX, sizeY;
 	int timer;
 	private int num;
@@ -24,12 +23,7 @@ public class OptionsMenu extends Menu implements GameActionListener {
 		// TODO Auto-generated constructor stub
 		this.mainMenu = mainMenu;
 		audioMenu = new AudioMenu(this);
-		try {
-			marnix = new Image("assets/marnix.jpg");
-		} catch (SlickException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 	}
 
 	@Override
@@ -53,7 +47,9 @@ public class OptionsMenu extends Menu implements GameActionListener {
 		if (audioMenuSelected) {
 			audioMenu.draw(container, game, g);
 		} else if (creditMenuSelected) {
+
 			getNum(200);
+
 		} else
 			super.draw(container, game, g);
 	}
