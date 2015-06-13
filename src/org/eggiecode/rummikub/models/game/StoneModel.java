@@ -23,13 +23,17 @@ public class StoneModel implements GameModel {
 	private UnicodeFont font;
 	private Vector2f textPosition;
 	private String number;
-	
+
 	private Rectangle border;
-	
+	private boolean isInitialized = false;
+
 	public StoneModel(Stone s, Vector2f position) {
 		super();
 		this.stone = s;
-		this.position = position;
+		if (this.position == null)
+			this.position = new Vector2f();
+		else
+			this.position = position;
 	}
 
 	@Override
@@ -41,18 +45,21 @@ public class StoneModel implements GameModel {
 		font.addGlyphs(400, 600);
 		font.getEffects().add(new ColorEffect(new Color(stone.getColor())));
 		font.loadGlyphs();
-font.setPaddingLeft(0);
-		
+		font.setPaddingLeft(0);
+
 		number = String.valueOf(stone.getNumber());
-		if(stone.getNumber() == -1){
+		if (stone.getNumber() == -1) {
 			number = "J";
 		}
-		if(number.length() == 2) {
-			textPosition = new Vector2f(12,18);
+		if (number.length() == 2) {
+			textPosition = new Vector2f(12, 18);
 		} else {
-			textPosition = new Vector2f(20,18);
+			textPosition = new Vector2f(20, 18);
 		}
-		border = new Rectangle(position.x -1, position.y -1, 51, 76);
+		border = new Rectangle(position.x - 1, position.y - 1, 51, 76);
+		isInitialized = true;
+		if (position == null)
+			position = new Vector2f();
 	}
 
 	@Override
@@ -71,8 +78,7 @@ font.setPaddingLeft(0);
 	public void update(GameContainer container, Game game, int delta)
 			throws SlickException {
 		// TODO Auto-generated method stub
-		
-		
+
 	}
 
 	public Stone getStone() {
@@ -82,16 +88,22 @@ font.setPaddingLeft(0);
 	public Vector2f getPosition() {
 		return position;
 	}
-	
+
 	public boolean isVectorCollision(int x, int y) {
 		return border.contains(x, y);
-		
+
 	}
-	public void setPosition(float x,float y) {
+
+	public void setPosition(float x, float y) {
+		if (position == null)
+			position = new Vector2f();
 		this.position.x = x;
 		this.position.y = y;
 		border.setX(x);
 		border.setY(y);
 	}
-	
+
+	public boolean isInitialized() {
+		return isInitialized;
+	}
 }

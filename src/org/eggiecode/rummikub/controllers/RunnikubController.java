@@ -38,12 +38,12 @@ public class RunnikubController {
 		}
 	}
 
-	public Stone getNewStone() {
+	public void givePlayerNewStone() {
 		Stone s = stones.get(random.nextInt(stones.size()));
 		while (s.isOnPlayerBoard() || s.isOnTable()) {
 			s = stones.get(random.nextInt(stones.size()));
 		}
-		return s;
+		player.addStone(s);
 	}
 
 	public Table getTable() {
@@ -59,13 +59,17 @@ public class RunnikubController {
 		table = new Table();
 		player = new Player();
 		for (int i = 0; i < 14; i++) {
-			player.addStone(getNewStone());
+			givePlayerNewStone();
 		}
 	}
 
 	public boolean addToTable(StoneSet set) {
 		if(!set.isValid())
 			return false;
+		for(Stone s : set.getStones()) {
+			s.setOnPlayerBoard(false);
+			s.setOnTable(true);
+		}
 		table.add(set);
 		return true;
 	}

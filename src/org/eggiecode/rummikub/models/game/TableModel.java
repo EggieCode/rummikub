@@ -9,10 +9,8 @@ import org.newdawn.slick.SlickException;
 
 public class TableModel implements GameModel{
 	
-	private Table table;
 
-	public TableModel(Table table) {
-		this.table = table;
+	public TableModel() {
 	}
 
 	@Override

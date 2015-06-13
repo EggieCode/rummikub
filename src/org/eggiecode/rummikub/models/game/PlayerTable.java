@@ -22,27 +22,20 @@ public class PlayerTable implements GameModel {
 	private LinkedList<StoneModel> stoneDek = new LinkedList();
 
 	private Button putinTable;
-
+	private Button newStoneButton;
+	private boolean fixOrder = true;
 	@Override
 	public void init(GameContainer container, Game game) throws SlickException {
 		// TODO Auto-generated method stub
-		int x = 10;
-		int y = container.getHeight() - 290;
-		for (Stone s : game.getRunnibkubController().getPlayer().getStones()) {
-			stones.add(new StoneModel(s, new Vector2f(x, y)));
-			x += 65;
-			if (x + 300 > container.getWidth()) {
-				y += 100;
-				x = 10;
-			}
-		}
 
-		for (StoneModel s : stones) {
-			s.init(container, game);
-		}
+		this.stones = game.getModelController().getPlayerStoneModels();
 		putinTable = new Button(new Vector2f(container.getWidth() / 3 * 2,
 				container.getHeight() - 375), "Put in table", 175, 40);
 		putinTable.init(container, game);
+
+		newStoneButton = new Button(new Vector2f(container.getWidth() - 185,
+				container.getHeight() - 280), "New stone", 175, 40);
+		newStoneButton.init(container, game);
 	}
 
 	@Override
@@ -53,29 +46,31 @@ public class PlayerTable implements GameModel {
 		g.setColor(new Color(0x8B4513));
 		g.fillRect(0, container.getHeight() - 300, container.getWidth(), 300);
 
-		g.setColor(new Color(0xf1f1f1));
+		g.setColor(new Color(0xFFFFFF));
 		g.fillRect(container.getWidth() - 200, container.getHeight() - 300,
 				200, 300);
 		g.setColor(new Color(0xffffff));
 		g.drawRect(0, container.getHeight() - 300, container.getWidth(), 1);
 
+		g.setColor(new Color(0x616BED));
 		g.fillRect(container.getWidth() / 3 - 30, container.getHeight() - 390,
 				container.getWidth() / 3, 90);
 
 		for (StoneModel m : stones)
 			m.draw(container, game, g);
 		putinTable.draw(container, game, g);
+		newStoneButton.draw(container, game, g);
 	}
 
 	@Override
 	public void update(GameContainer container, Game game, int delta)
 			throws SlickException {
 		// TODO Auto-generated method stub
-
+		if(game.getModelController().isStonesUpdated())
+			fixOrder = true;
 		Input input = container.getInput();
 		StoneModel selectedStone = null;
 
-		boolean fixOrder = false;
 
 		if (input.isMousePressed(input.MOUSE_LEFT_BUTTON)) {
 			for (StoneModel s : stones) {
@@ -104,6 +99,9 @@ public class PlayerTable implements GameModel {
 					stoneDek.clear();
 				}
 			}
+			if (newStoneButton.contains(input.getMouseX(), input.getMouseY())) {
+				game.getRunnibkubController().givePlayerNewStone();
+			}
 
 		}
 
@@ -116,6 +114,14 @@ public class PlayerTable implements GameModel {
 			this.stoneDek.add(selectedStone);
 		}
 
+		fixOrder(container);
+
+		putinTable.update(container, game, delta);
+		newStoneButton.update(container, game, delta);
+		
+	}
+
+	private void fixOrder(GameContainer container) {
 		if (fixOrder) {
 
 			int x = 10;
@@ -130,10 +136,8 @@ public class PlayerTable implements GameModel {
 					}
 				}
 			}
+			fixOrder = false;
 		}
-
-		putinTable.update(container, game, delta);
-
 	}
 
 }

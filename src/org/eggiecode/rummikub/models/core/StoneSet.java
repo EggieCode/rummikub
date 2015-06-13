@@ -21,7 +21,9 @@ public class StoneSet {
 	}
 
 	private LinkedList<Stone> set = new LinkedList();
-
+	public Stone[] getStones() {
+		return set.toArray(new Stone[0]);
+	}
 	public boolean isValid() {
 		if(set.size() < 3)
 			return false;
@@ -50,16 +52,16 @@ public class StoneSet {
 
 		for (int i = set.size() - 1; i >= 0; i--) { // 1 2 3
 			Stone s = set.get(i);
-			if (joker == true && value == -1) {
+		
+			if (joker == true && s.getNumber() == -1) {
 				return false;
 			}
-			if (value == -1)
+			if (s.getNumber() == -1)
 				joker = true;
-			
-			if (color != s.getColor())
+			if (color != s.getColor() && s.getNumber() != -1)
 				return false;
 
-			if (s.getNumber() - 1 == value) {
+			if (s.getNumber() - 1 == value|| s.getNumber() != -1) {
 				value = s.getNumber();
 			} else {
 				return false;
@@ -78,15 +80,15 @@ public class StoneSet {
 		int color = set.get(0).getColor();
 		for (Stone s : set) { // 1 2 3
 
-			if (joker == true && value == -1) {
+			if (joker == true && s.getNumber() == -1) {
 				return false;
 			}
-			if (value == -1)
+			if (s.getNumber() == -1)
 				joker = true;
-			if (color != s.getColor())
+			if (color != s.getColor() && s.getNumber() != -1)
 				return false;
 
-			if (s.getNumber() - 1 == value) {
+			if (s.getNumber() - 1 == value || s.getNumber() != -1) {
 				value = s.getNumber();
 			} else {
 				return false;
@@ -105,15 +107,15 @@ public class StoneSet {
 			if (joker == true && value == -1) {
 				return false;
 			}
-			if (value == -1)
+			if (s.getNumber() == -1)
 				joker = true;
-			if (colors.contains(s.getColor()))
+			if (colors.contains(s.getColor()) && s.getNumber()!= -1)
 
 			{
 				return false;
 			}
 			colors.add(s.getColor());
-			if (value != s.getNumber() && value != -1) {
+			if (value != s.getNumber() && s.getNumber() != -1) {
 				return false;
 			}
 		}

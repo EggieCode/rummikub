@@ -41,6 +41,9 @@ public class Button implements GameModel{
 		// TODO Auto-generated method stub
 		g.setColor(color);
 		g.draw(box);
+		g.setColor(new Color(10,10,10, 40));
+		g.fill(box);
+		g.setColor(color);
 		g.drawString(" >> " + text, postion.x + 10, postion.y + 10);
 		
 	}
