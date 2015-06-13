@@ -14,9 +14,13 @@ public class FontController {
 		fontMenu.addGlyphs(400, 600);
 		fontMenu.getEffects().add(new ColorEffect(new java.awt.Color(93,163,188)));
 		fontMenu.loadGlyphs();
+
 	}
 	
 	public UnicodeFont getFontMenu() {
 		return fontMenu;
 	}
+
+	
+	
 }
