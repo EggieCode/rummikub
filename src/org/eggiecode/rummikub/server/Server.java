@@ -5,61 +5,62 @@ import java.io.*;
 import java.util.*;
 
 public class Server {
-
+	ServerSocket serverSocket;
+	
 	public static void main(String[] args) {
 		new Server();
 
 	}
-	public Server(){
-		
-		try{
-			ServerSocket serverSocket = new ServerSocket(8000);
-			int client = 1;
-			while (true){
-				Socket socket = serverSocket.accept();
-				
-				HandleAGame task = new HandleAGame(socket, socket);
-				
-				
-			}
-		}
-		catch(IOException ex){
+
+	public Server() {
+
+		try {
+			serverSocket = new ServerSocket(8000);
 			
+			System.out.println("Server started");
+			int client = 1;
+			while (true) {
+				System.out.println("Acceping client");
+				
+				Socket socket = serverSocket.accept();
+
+				GameClient task = new GameClient(socket);
+				new Thread(task).start();
+				System.out.println("New client connected");
+				
+
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
-		
-		
-		
-		
+
 	}
-	
+
 }
-class HandleAGame implements Runnable{
-private Socket player1;
-private Socket player2;
-private DataInputStream fromPlayer1; 
-private DataOutputStream toPlayer1; 
-private DataInputStream fromPlayer2; 
-private DataOutputStream toPlayer2;
-public HandleAGame(Socket player1 , Socket player2){
-	this.player1 = player1;
-	this.player2 = player2;
-}
+
+class GameClient implements Runnable {
+	private Socket player;
+	private DataInputStream inputStream;
+	private DataOutputStream outStream;
+
+	public GameClient(Socket player) throws IOException {
+		this.player = player;
+		inputStream = new DataInputStream(player.getInputStream());
+		outStream = new DataOutputStream(player.getOutputStream());
+	}
 
 	@Override
 	public void run() {
-		try{
-			DataInputStream fromPlayer1	= new DataInputStream(player1.getInputStream());
-			DataOutputStream toPlayer1  = new DataOutputStream(player1.getOutputStream());
-			DataInputStream fromPlayer2 = new DataInputStream(player2.getInputStream());
-			DataOutputStream toPlayer2 = new DataOutputStream(player2.getOutputStream());
+		try {
+			int b;
+			while((b = inputStream.read()) != -1) {
+				System.out.println(b);
+				
+			}
 			
+		} catch (IOException e) {
+			System.err.println(e);
 		}
-		catch(IOException e){
-			System.err.println(e); 
-		}
-		
+
 	}
-	
-	
-	
 }

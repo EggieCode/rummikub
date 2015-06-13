@@ -2,6 +2,7 @@ package org.eggiecode.rummikub.view;
 
 import org.eggiecode.rummikub.client.Game;
 import org.eggiecode.rummikub.models.game.PlayerTable;
+import org.eggiecode.rummikub.models.game.TableModel;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -12,7 +13,7 @@ public class GameState extends BasicGameState {
 
 	public static final int ID = 1;
 	private PlayerTable playerTable;
-	
+	private TableModel table;
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame stateBasedGame)
@@ -22,6 +23,8 @@ public class GameState extends BasicGameState {
 		game.getRunnibkubController().startGame();
 		playerTable = new PlayerTable();
 		playerTable.init(container,  game);
+		
+		table =new TableModel();
 	}
 
 	@Override
