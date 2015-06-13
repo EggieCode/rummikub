@@ -1,8 +1,9 @@
 package org.eggiecode.rummikub.models.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Table {
+public class Table implements Serializable{
 	private ArrayList<StoneSet> stoneSets = new ArrayList();
 
 	

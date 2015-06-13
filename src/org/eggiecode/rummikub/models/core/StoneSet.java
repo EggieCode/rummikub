@@ -1,9 +1,10 @@
 package org.eggiecode.rummikub.models.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class StoneSet {
+public class StoneSet implements Serializable {
 
 	public static void main(String[] ars) {
 		StoneSet s = new StoneSet();

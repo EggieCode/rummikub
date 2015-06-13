@@ -1,7 +1,9 @@
 package org.eggiecode.rummikub.models.core;
 
+import java.io.Serializable;
 
-public class Stone {
+
+public class Stone implements Serializable{
 	private final int number;
 
 	private final int color;

@@ -1,11 +1,15 @@
 package org.eggiecode.rummikub.server;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import org.eggiecode.rummikub.controllers.RunnikubController;
+import org.eggiecode.rummikub.server.objects.ClientPlayer;
 
 public class Server {
 	ServerSocket serverSocket;
+	private RunnikubController runnikubController;
 	
 	public static void main(String[] args) {
 		new Server();
@@ -13,7 +17,11 @@ public class Server {
 	}
 
 	public Server() {
-
+		this.runnikubController = new RunnikubController();
+		this.runnikubController.startGame();
+		
+		
+		
 		try {
 			serverSocket = new ServerSocket(8000);
 			
@@ -24,7 +32,7 @@ public class Server {
 				
 				Socket socket = serverSocket.accept();
 
-				GameClient task = new GameClient(socket);
+				ClientPlayer task = new ClientPlayer(socket);
 				new Thread(task).start();
 				System.out.println("New client connected");
 				
@@ -36,31 +44,4 @@ public class Server {
 
 	}
 
-}
-
-class GameClient implements Runnable {
-	private Socket player;
-	private DataInputStream inputStream;
-	private DataOutputStream outStream;
-
-	public GameClient(Socket player) throws IOException {
-		this.player = player;
-		inputStream = new DataInputStream(player.getInputStream());
-		outStream = new DataOutputStream(player.getOutputStream());
-	}
-
-	@Override
-	public void run() {
-		try {
-			int b;
-			while((b = inputStream.read()) != -1) {
-				System.out.println(b);
-				
-			}
-			
-		} catch (IOException e) {
-			System.err.println(e);
-		}
-
-	}
 }
