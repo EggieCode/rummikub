@@ -18,6 +18,7 @@ public class OptionsMenu extends Menu implements GameActionListener {
 	Image marnix;
 	float sizeX, sizeY;
 	int timer;
+	private int num;
 
 	public OptionsMenu(MainMenu mainMenu) {
 		// TODO Auto-generated constructor stub
@@ -52,10 +53,21 @@ public class OptionsMenu extends Menu implements GameActionListener {
 		if (audioMenuSelected) {
 			audioMenu.draw(container, game, g);
 		} else if (creditMenuSelected) {
-			marnix.draw(0, 0, container.getWidth(),
-					container.getWidth() * 1.33f);
+			getNum(200);
 		} else
 			super.draw(container, game, g);
+	}
+
+	private int getNum(int i) {
+		if (num == 1 ){
+			System.out.println(1);
+			return 1;
+		}
+		else {
+			System.out.println(num+getNum(num-1));
+			return(num+getNum(num-1));
+		}
+		
 	}
 
 	@Override
