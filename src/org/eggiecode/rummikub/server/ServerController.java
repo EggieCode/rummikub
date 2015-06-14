@@ -88,10 +88,10 @@ public class ServerController {
 
 	public Stone randomStone() {
 		int i = 0;
-//		Stone s = stones.get(random.nextInt(stones.size()));
-		Stone s = stones.get(i);
+		Stone s = stones.get(random.nextInt(stones.size()));
+//		Stone s = stones.get(i);
 		while (s.isOnPlayerBoard() || s.isOnTable() && i < stones.size()) {
-			s = stones.get(i);
+			s = stones.get(random.nextInt(stones.size()));
 			i++;
 		}
 		
