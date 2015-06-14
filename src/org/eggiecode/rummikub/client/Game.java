@@ -8,7 +8,9 @@ import org.eggiecode.rummikub.controllers.GameModelController;
 import org.eggiecode.rummikub.controllers.InputController;
 import org.eggiecode.rummikub.controllers.RunnikubController;
 import org.eggiecode.rummikub.controllers.SettingsController;
+import org.eggiecode.rummikub.view.EndGameState;
 import org.eggiecode.rummikub.view.GameState;
+import org.eggiecode.rummikub.view.ServerSelectState;
 import org.eggiecode.rummikub.view.StartState;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -36,6 +38,8 @@ public class Game extends StateBasedGame {
 
 		this.addState(new StartState());
 		this.addState(new GameState());
+		this.addState(new ServerSelectState());
+		this.addState(new EndGameState());
 	}
 
 	@Override
@@ -54,7 +58,6 @@ public class Game extends StateBasedGame {
 
 		settingsController.loadConfig();
 		fontController.loadFonts();
-		runnikubController.searchServer();
 	}
 
 	@Override
@@ -63,7 +66,7 @@ public class Game extends StateBasedGame {
 		// TODO Auto-generated method stub
 		super.preUpdateState(container, delta);
 		inputController.preUpdateState(container, delta);
-		if (runnikubController.isConnected())
+		if (runnikubController.isGameReady())
 			gameModelController.preUpdateState(container, delta);
 	}
 
@@ -90,4 +93,5 @@ public class Game extends StateBasedGame {
 	public GameModelController getModelController() {
 		return gameModelController;
 	}
+	
 }

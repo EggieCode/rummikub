@@ -24,6 +24,7 @@ public class PlayerTable implements GameModel {
 	private Button putinTable;
 	private Button newStoneButton;
 	private boolean fixOrder = true;
+
 	@Override
 	public void init(GameContainer container, Game game) throws SlickException {
 		// TODO Auto-generated method stub
@@ -58,6 +59,17 @@ public class PlayerTable implements GameModel {
 
 		for (StoneModel m : stones)
 			m.draw(container, game, g);
+
+		if (game.getRunnibkubController().isPlayerTurn()) {
+
+			g.setColor(Color.green);
+			g.drawString("Your turn", 30, container.getHeight() - 320);
+		} else {
+			g.setColor(Color.green);
+			g.drawString("Enemey turn", 30, container.getHeight() - 320);
+
+		}
+
 		putinTable.draw(container, game, g);
 		newStoneButton.draw(container, game, g);
 	}
@@ -66,11 +78,10 @@ public class PlayerTable implements GameModel {
 	public void update(GameContainer container, Game game, int delta)
 			throws SlickException {
 		// TODO Auto-generated method stub
-		if(game.getModelController().isStonesUpdated())
+		if (game.getModelController().isStonesUpdated())
 			fixOrder = true;
 		Input input = container.getInput();
 		StoneModel selectedStone = null;
-
 
 		if (input.isMousePressed(input.MOUSE_LEFT_BUTTON)) {
 			for (StoneModel s : stones) {
@@ -85,7 +96,9 @@ public class PlayerTable implements GameModel {
 				}
 			}
 
-			if (putinTable.contains(input.getMouseX(), input.getMouseY())) {
+			if (game.getRunnibkubController().isPlayerTurn()
+					&& putinTable
+							.contains(input.getMouseX(), input.getMouseY())) {
 				StoneSet set = new StoneSet();
 
 				for (StoneModel s : stoneDek) {
@@ -99,8 +112,16 @@ public class PlayerTable implements GameModel {
 					stoneDek.clear();
 				}
 			}
-			if (newStoneButton.contains(input.getMouseX(), input.getMouseY())) {
-				game.getRunnibkubController().givePlayerNewStone();
+
+			if (game.getRunnibkubController().isPlayerTurn()
+					&& newStoneButton.contains(input.getMouseX(),
+							input.getMouseY())) {
+				if (game.getRunnibkubController().isPlayerSendedStones()) {
+					game.getRunnibkubController().endTurn();
+				} else {
+					game.getRunnibkubController().givePlayerNewStone();
+
+				}
 			}
 
 		}
@@ -118,7 +139,7 @@ public class PlayerTable implements GameModel {
 
 		putinTable.update(container, game, delta);
 		newStoneButton.update(container, game, delta);
-		
+
 	}
 
 	private void fixOrder(GameContainer container) {

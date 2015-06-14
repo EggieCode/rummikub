@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import org.eggiecode.rummikub.client.Game;
 import org.eggiecode.rummikub.models.GameActionListener;
-import org.eggiecode.rummikub.view.GameState;
+import org.eggiecode.rummikub.view.ServerSelectState;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -24,7 +24,7 @@ public class MainMenu extends Menu implements GameActionListener {
 		
 		
 
-		addMenuItem(new MenuItem(100 * 2, "START!"));
+		addMenuItem(new MenuItem(100 * 2, "Search Server"));
 		addMenuItem(new MenuItem(100 * 3, "Options"));
 		addMenuItem(new MenuItem(100 * 4, "Exit Game"));
 		for (MenuItem item : menuItems)
@@ -60,7 +60,7 @@ public class MainMenu extends Menu implements GameActionListener {
 		// TODO Auto-generated method stub
 		switch (getSelectedMenuItem()) {
 		case 0:
-			game.enterState(GameState.ID);
+			game.enterState(ServerSelectState.ID);
 			break;
 
 		case 1:

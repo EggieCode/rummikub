@@ -18,7 +18,8 @@ public class StoneSet implements Serializable {
 
 	public void add(Stone stone) {
 		set.add(stone);
-
+		stone.setOnTable(true);
+		stone.setOnPlayerBoard(false);
 	}
 
 	private LinkedList<Stone> set = new LinkedList();

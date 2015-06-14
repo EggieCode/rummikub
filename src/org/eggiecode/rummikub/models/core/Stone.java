@@ -2,18 +2,21 @@ package org.eggiecode.rummikub.models.core;
 
 import java.io.Serializable;
 
-
-public class Stone implements Serializable{
+public class Stone implements Serializable {
 	private final int number;
 
 	private final int color;
 	private boolean onPlayerBoard = false;
 	private boolean onTable = false;
 
-	public Stone(int number, int color) {
+	private final int numStone;
+
+	public Stone(int number, int color, int numStone) {
 		this.number = number;
 		this.color = color;
+		this.numStone = numStone;
 	}
+
 
 	public boolean isOnPlayerBoard() {
 		return onPlayerBoard;
@@ -39,4 +42,13 @@ public class Stone implements Serializable{
 		return color;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		if (obj == this)
+			return true;
+		if (!(obj instanceof Stone))
+			return false;
+		return ((Stone) obj).color == color && ((Stone) obj).number == number && ((Stone) obj).numStone == numStone;
+	}
 }

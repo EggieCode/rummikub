@@ -1,15 +1,21 @@
 package org.eggiecode.rummikub.server;
 
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.eggiecode.rummikub.models.core.EndGame;
 import org.eggiecode.rummikub.models.core.Stone;
+import org.eggiecode.rummikub.models.core.StoneSet;
 import org.eggiecode.rummikub.models.core.Table;
 import org.eggiecode.rummikub.server.objects.ClientPlayer;
 import org.eggiecode.rummikub.server.objects.Command;
 
 public class ServerController {
+	private static final int colors[] = new int[] { 0x344CFA, 0xff0000,
+			0xC48206, 0x0 };
+	private static final int numbers[] = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9,
+			10, 11, 12, 13 };
+
 	private ArrayList<Stone> stones = new ArrayList();
 	protected ArrayList<ClientPlayer> clients = new ArrayList();
 	private Table table;
@@ -17,23 +23,9 @@ public class ServerController {
 	private int playerOnTurn;
 	private Random random = new Random();
 	private ArrayList<Stone> beginStones;
-	private static final int colors[] = new int[] { 0x344CFA, 0xff0000,
-			0xC48206, 0x0 };
-	private static final int numbers[] = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 11, 12, 13 };
-	private Send_Receive s_r = new Send_Receive();
 
 	public ServerController(Server server) {
 		table = new Table();
-		for (int i = 0; i < 2; i++) {
-			for (int color : colors) {
-				for (int number : numbers) {
-					stones.add(new Stone(number, color));
-				}
-			}
-
-			stones.add(new Stone(-1, colors[i]));
-		}
 
 	}
 
@@ -43,54 +35,106 @@ public class ServerController {
 		}
 	}
 
-	public ArrayList<Stone> generateBeginStones() {
-		beginStones.clear();
-		Stone s = stones.get(random.nextInt(stones.size()));
-		while (s.isOnPlayerBoard() || s.isOnTable()) {
-			s = stones.get(random.nextInt(stones.size()));
+	private void startGame() {
+		this.table = new Table();
+		generateDeck();
+		for (ClientPlayer c : clients) {
+			c.createPlayer();
+			c.sendPlayer();
+			c.sendPutTable(table);
+			c.sendCommand(Command.GAME_START);
 		}
 
-		beginStones.add(s);
-		return beginStones;
+		clients.get(0).sendCommand(Command.PLAYER_TURN);
 	}
 
-	public void nextturn(int playNum) {
-		switch (playNum) {
-		case 1:
-			s_r.sendTurn(clients.get(0).getObjectOutput(), false);
-			s_r.sendTurn(clients.get(1).getObjectOutput(), true);
-			s_r.sendPutTable(clients.get(0).getObjectOutput(), table);
-			playerOnTurn = 1;
-			break;
-		case 2:
-			s_r.sendTurn(clients.get(1).getObjectOutput(), true);
-			s_r.sendTurn(clients.get(0).getObjectOutput(), false);
-			s_r.sendPutTable(clients.get(1).getObjectOutput(), table);
-			playerOnTurn = 2;
-			break;
+	public void playerReady(ClientPlayer p) {
+		boolean ready = true;
+		p.setReady(true);
+		for (ClientPlayer c : clients) {
+			if (!c.isReady()) {
+				ready = false;
+				break;
+			}
 		}
-
+		if (ready && clients.size() >= 2)
+			startGame();
 	}
 
-	public void getPutTable() {
-		switch (playerOnTurn) {
-		case 1:
-			s_r.receivePutTable(clients.get(0).getObjectInput());
-		case 2:
-			s_r.receivePutTable(clients.get(1).getObjectInput());
+	public void nextTurn(ClientPlayer clientPlayer) {
+		if (clientPlayer.getPlayerNum() != playerOnTurn)
+			return;
+		if(clientPlayer.getPlayer().getStones().length == 0) {
+			endGame();
+			return;
 		}
+		
+		int nextPlayerTurn = (playerOnTurn + 1) % clients.size();
+		if (nextPlayerTurn < 0)
+			nextPlayerTurn = -nextPlayerTurn;
+		for (ClientPlayer c : clients) {
+			c.sendPutTable(table);
+			if (c.getPlayerNum() == nextPlayerTurn) {
+				c.sendCommand(Command.PLAYER_TURN);
+			} else if (c.getPlayerNum() == playerOnTurn) {
+
+			}
+
+		}
+		playerOnTurn = nextPlayerTurn;
+		System.out.println("Turn of: " + playerOnTurn);
+
 	}
 
-	public void SendBeginStones() {
-		generateBeginStones();
-		s_r.sendBeginStones(clients.get(0).getObjectOutput(), beginStones);
-		generateBeginStones();
-		s_r.sendBeginStones(clients.get(1).getObjectOutput(), beginStones);
+	public Stone randomStone() {
+		int i = 0;
+//		Stone s = stones.get(random.nextInt(stones.size()));
+		Stone s = stones.get(i);
+		while (s.isOnPlayerBoard() || s.isOnTable() && i < stones.size()) {
+			s = stones.get(i);
+			i++;
+		}
+		
+		return s;
 	}
 
-	public void startGame() {
+	public void generateDeck() {
 		stones.clear();
+		for (int i = 0; i < 2; i++) {
+			for (int color : colors) {
+				for (int number : numbers) {
+					stones.add(new Stone(number, color, i));
+				}
+			}
 
+			stones.add(new Stone(-1, colors[i], i));
+		}
+
+	}
+
+	public void playerDisconnected(ClientPlayer clientPlayer) {
+		// TODO Auto-generated method stub
+		this.clients.remove(clientPlayer);
+		System.out.println("Player disconnected");
+	}
+
+	public void putOnTable(StoneSet newStoneSet) {
+		// TODO Auto-generated method stub
+		this.table.add(newStoneSet);
+		for (ClientPlayer c : clients)
+			c.sendPutTable(table);
+	}
+
+	public void endGame() {
+		// TODO Auto-generated method stub
+		EndGame endGame = new EndGame();
+		for (ClientPlayer c : clients) {
+			endGame.addPlayer(c.getPlayer());
+		}
+		endGame.setWinner();
+		for (ClientPlayer c : clients) {
+			c.sendEndGame(endGame);
+		}		
 	}
 
 }

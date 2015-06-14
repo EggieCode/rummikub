@@ -11,9 +11,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
+import org.eggiecode.rummikub.models.core.EndGame;
+import org.eggiecode.rummikub.models.core.Player;
+import org.eggiecode.rummikub.models.core.StoneSet;
+import org.eggiecode.rummikub.models.core.Table;
 import org.eggiecode.rummikub.models.networking.ClientBroadcastReply;
 import org.eggiecode.rummikub.models.networking.ServerBroadcastReply;
+import org.eggiecode.rummikub.server.objects.Command;
 
 public class ClientController extends Thread {
 
@@ -26,6 +32,11 @@ public class ClientController extends Thread {
 	private Socket clientSocket;
 	private ObjectInputStream inputStream;
 	private ObjectOutputStream outputStream;
+
+	private ArrayList<ServerBroadcastReply> servers = new ArrayList<>();
+
+	private boolean connecting = false;
+	private boolean connected = false;
 
 	public ClientController(RunnikubController runnikubController) {
 		// TODO Auto-generated constructor stub
@@ -48,26 +59,48 @@ public class ClientController extends Thread {
 		this.runnikubController = runnikubController;
 	}
 
-	protected boolean connect(InetAddress address) {
+	protected boolean connect(InetAddress address, int i) {
 		// TODO Auto-generated method stub
+		connecting = true;
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					clientSocket = new Socket(address, i);
+					// clientSocket.setKeepAlive(true);
+					outputStream = new ObjectOutputStream(
+							clientSocket.getOutputStream());
+					outputStream.flush();
+					inputStream = new ObjectInputStream(
+							clientSocket.getInputStream());
+					System.out.println("Connected!");
+					ClientController.this.start();
+					connected = true;
+					connecting = false;
 
-		try {
-			clientSocket = new Socket(address, 6789);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		try {
-			inputStream = new ObjectInputStream(clientSocket.getInputStream());
-			outputStream = new ObjectOutputStream(
-					clientSocket.getOutputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.start();
+					sendCommand(Command.READY);
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					connected = false;
+					connecting = false;
+				}
+
+			}
+
+		}).start();
+
 		return true;
+	}
+
+	protected void sendCommand(Command command) {
+		try {
+			this.outputStream.reset();
+			this.outputStream.writeObject(command);
+			outputStream.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -75,8 +108,21 @@ public class ClientController extends Thread {
 		// TODO Auto-generated method stub
 		Object o;
 		try {
-			while ((o = inputStream.readObject()) != null) {
-
+			while (true) {
+				o = inputStream.readObject();
+				System.out.println(o.toString());
+				if (o instanceof Command) {
+					runnikubController.processCommand((Command) o);
+				}
+				if (o instanceof Table) {
+					runnikubController.setTable((Table) o);
+				}
+				if (o instanceof Player) {
+					runnikubController.setPlayer((Player) o);
+				}
+				if (o instanceof EndGame) {
+					runnikubController.setEndGame((EndGame)o);
+				}
 			}
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
@@ -85,8 +131,8 @@ public class ClientController extends Thread {
 	}
 
 	public void findServers() {
+		servers.clear();
 		// Get the address that we are going to connect to.
-		System.out.println("Searching servers");
 		final byte b[];
 		// Open a new DatagramSocket, which will be used to send the data.
 		try {
@@ -109,8 +155,7 @@ public class ClientController extends Thread {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					for (int i = 0; i < 5000000; i++) {
-						System.out.println("Sending data");
+					for (int i = 0; i < 5; i++) {
 						DatagramPacket msgPacket = new DatagramPacket(b,
 								b.length, BROADCAST_INET, BROADCAST_PORT);
 						serverSocket.send(msgPacket);
@@ -144,7 +189,6 @@ public class ClientController extends Thread {
 			try {
 				while (true) {
 					byte b[] = new byte[1024 * 24];
-					System.out.println("Waiting for packet");
 					DatagramPacket msgPacket = new DatagramPacket(b, 1024 * 24,
 							BROADCAST_INET, BROADCAST_PORT);
 					serverSocket.receive(msgPacket);
@@ -153,9 +197,10 @@ public class ClientController extends Thread {
 							new ByteArrayInputStream(b, 0, 1024 * 24));
 					Object o = inputStream.readObject();
 					if (o instanceof ServerBroadcastReply) {
-						ServerBroadcastReply replay = (ServerBroadcastReply) o;
-						System.out.print(replay);
-						System.out.println(" - " + msgPacket.getAddress().getHostAddress() + "\n");
+
+						ServerBroadcastReply reply = (ServerBroadcastReply) o;
+						reply.setAddress(msgPacket.getAddress());
+						addServerReplay(reply);
 					}
 				}
 			} catch (IOException e) {
@@ -167,4 +212,52 @@ public class ClientController extends Thread {
 		}
 
 	}
+
+	public void addServerReplay(ServerBroadcastReply replay) {
+		// TODO Auto-generated method stub
+		for (ServerBroadcastReply s : servers) {
+			if (s.equals(replay))
+				return;
+		}
+		servers.add(replay);
+	}
+
+	public ArrayList<ServerBroadcastReply> getServers() {
+		// TODO Auto-generated method stub
+		return this.servers;
+
+	}
+
+	public boolean isConnecting() {
+		return connecting;
+	}
+
+	public boolean isConnected() {
+		return connected;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		// TODO Auto-generated method stub
+		if (connected) {
+			this.join();
+			this.interrupt();
+			this.clientSocket.close();
+
+		}
+
+		super.finalize();
+	}
+
+	public void sendStoneSet(StoneSet set) {
+		// TODO Auto-generated method stub
+		try {
+			this.outputStream.reset();
+			this.outputStream.writeObject(set);
+			outputStream.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

@@ -19,43 +19,51 @@ import org.eggiecode.rummikub.server.objects.ClientPlayer;
 
 public class Server {
 	ServerSocket serverSocket;
-	private RunnikubController runnikubController;
 
 	private ServerController controler;
-	ClientPlayer task;
+	private String serverName = "Rummicup Server";
+	private int port = 45123;
 
 	public static void main(String[] args) throws UnknownHostException {
-		TestBoardcastClient t = new TestBoardcastClient();
-		new Thread(t).start();
-
+		new Server();
 	}
 
-	public Server() {
-		this.runnikubController = new RunnikubController();
+	public Server() throws UnknownHostException {
+
+		TestBoardcastClient t = new TestBoardcastClient(serverName, port);
+		new Thread(t).start();
+
 		controler = new ServerController(this);
-
 		try {
-			serverSocket = new ServerSocket(8000);
+			startServer();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
 
-			System.out.println("Server started");
-			int j = 1;
-			while (controler.clients.size() < 2) {
-				System.out.println("Acceping client");
+	private void startServer() throws IOException {
+		serverSocket = new ServerSocket(port);
 
+		System.out.println("Server started");
+		while (controler.clients.size() < 2) {
+			System.out.println("Acceping client");
+
+			ClientPlayer task;
+			try {
 				Socket socket = serverSocket.accept();
-
-				ClientPlayer task = new ClientPlayer(socket, j);
+				System.out.println("Client connected: " + socket.getInetAddress().getHostAddress());
+				task = new ClientPlayer(controler, socket, controler.clients.size());
 				new Thread(task).start();
-				System.out.println("New client connected");
 				if (task != null) {
 					controler.addClient(task);
-					j++;
 				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
 			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
 
+		}
 	}
 
 }
@@ -66,10 +74,16 @@ class TestBoardcastClient implements Runnable {
 	private static final int BROADCAST_PORT = 45110;
 	private InetAddress address;
 	private DatagramPacket reply;
+	private int port;
+	private String serverName;
 
-	public TestBoardcastClient() throws UnknownHostException {
+	public TestBoardcastClient(String serverName, int port)
+			throws UnknownHostException {
 		// Get the address that we are going to connect to.
 		address = InetAddress.getByName(BROADCAST_INET_ADDR);
+		this.port = port;
+		this.serverName = serverName;
+
 	}
 
 	@Override
@@ -95,17 +109,15 @@ class TestBoardcastClient implements Runnable {
 
 				if (o instanceof ClientBroadcastReply) {
 					ClientBroadcastReply replay = (ClientBroadcastReply) o;
-					System.out.println(replay);
 				}
 
 				ByteArrayOutputStream buffer = new ByteArrayOutputStream(
 						1024 * 24);
 				ObjectOutputStream outputStream = new ObjectOutputStream(buffer);
-				outputStream.writeObject(new ServerBroadcastReply(
-						"Test server", 1));
+				outputStream.writeObject(new ServerBroadcastReply(serverName,
+						1, port));
 
 				byte[] b = buffer.toByteArray();
-				System.out.println("Set reply");
 				DatagramPacket replayPacket = new DatagramPacket(b, b.length,
 						msgPacket.getSocketAddress());
 				clientSocket.send(replayPacket);

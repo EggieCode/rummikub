@@ -8,6 +8,7 @@ import org.eggiecode.rummikub.models.core.StoneSet;
 import org.eggiecode.rummikub.models.core.Table;
 import org.eggiecode.rummikub.models.game.StoneModel;
 import org.eggiecode.rummikub.models.game.StoneSetModel;
+import org.eggiecode.rummikub.models.networking.ServerBroadcastReply;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.AppletGameContainer.Container;
 import org.newdawn.slick.SlickException;
@@ -19,6 +20,7 @@ public class GameModelController {
 	private ArrayList<StoneSetModel> stoneSetModels = new ArrayList<>();
 	private ArrayList<StoneSetModel> tableStoneSetModels = new ArrayList<>();
 	private ArrayList<StoneModel> playerStoneModels = new ArrayList<>();
+
 	private int updateDelay = 0;
 	private boolean stonesUpdated = false;
 
@@ -27,6 +29,9 @@ public class GameModelController {
 	}
 
 	public ArrayList<StoneModel> getPlayerStoneModels() throws SlickException {
+		if (rummikubController.getPlayer() == null)
+			return playerStoneModels;
+		ArrayList<StoneModel> tmpList = new ArrayList<>();
 
 		for (Stone s : rummikubController.getPlayer().getStones()) {
 			StoneModel stoneModel = getStoneModel(s);
@@ -42,12 +47,21 @@ public class GameModelController {
 
 				}
 			}
+			for (StoneModel model : playerStoneModels) {
+				if (model.getStone() == s)
+					tmpList.add(model);
+			}
 		}
+		playerStoneModels.clear();
+		playerStoneModels.addAll(tmpList);
 
 		return playerStoneModels;
 	}
 
 	public ArrayList<StoneSetModel> getTableStoneSets() throws SlickException {
+		if (rummikubController.getTable() == null)
+			return tableStoneSetModels;
+		ArrayList<StoneSetModel> tmpList = new ArrayList<>();
 		for (StoneSet s : rummikubController.getTable().getStoneSets()) {
 			StoneSetModel stoneSetModel = getStoneSetModel(s);
 
@@ -55,7 +69,16 @@ public class GameModelController {
 				tableStoneSetModels.add(stoneSetModel);
 				stonesUpdated = true;
 			}
+
+			for (StoneSetModel model : tableStoneSetModels) {
+				if (model.getStoneSet() == s)
+					tmpList.add(model);
+			}
+
 		}
+
+		tableStoneSetModels.clear();
+		tableStoneSetModels.addAll(tmpList);
 
 		return tableStoneSetModels;
 	}
@@ -81,7 +104,7 @@ public class GameModelController {
 		StoneSetModel stoneSetModel = new StoneSetModel(s);
 
 		stoneSetModels.add(stoneSetModel);
-		for(Stone stone : s.getStones()){
+		for (Stone stone : s.getStones()) {
 			stoneSetModel.add(this.getStoneModel(stone));
 		}
 		stoneSetModel.init(Client.appgc, Client.game);
@@ -92,15 +115,10 @@ public class GameModelController {
 	public void preUpdateState(GameContainer container, int delta)
 			throws SlickException {
 		// TODO Auto-generated method stub
-		if (updateDelay >= 1) {
-			getTableStoneSets();
-			getPlayerStoneModels();
-			updateDelay = 0;
-			stonesUpdated = true;
-		} else {
-			stonesUpdated = false;
-			updateDelay += 0.2f * delta;
-		}
+		getTableStoneSets();
+		getPlayerStoneModels();
+		updateDelay = 0;
+		stonesUpdated = true;
 	}
 
 	public boolean isStonesUpdated() {

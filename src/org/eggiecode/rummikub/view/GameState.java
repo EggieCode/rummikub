@@ -14,33 +14,41 @@ public class GameState extends BasicGameState {
 	public static final int ID = 1;
 	private PlayerTable playerTable;
 	private TableModel table;
-	
+
 	@Override
 	public void init(GameContainer container, StateBasedGame stateBasedGame)
 			throws SlickException {
 		// TODO Auto-generated method stub
 		Game game = (Game) stateBasedGame;
 		playerTable = new PlayerTable();
-//		playerTable.init(container,  game);
-		
-		table =new TableModel();
-//		table.init(container, game);
+		playerTable.init(container, game);
+		table = new TableModel();
+		table.init(container, game);
 	}
 
 	@Override
-	public void render(GameContainer container, StateBasedGame game, Graphics g)
+	public void render(GameContainer container, StateBasedGame stateBasedGame, Graphics g)
 			throws SlickException {
-		// TODO Auto-generated method stub
+		
+
+		Game game = (Game) stateBasedGame;
 		playerTable.draw(container, (Game) game, g);
 		table.draw(container, (Game) game, g);
+		
 	}
 
 	@Override
-	public void update(GameContainer container, StateBasedGame game, int delta)
-			throws SlickException {
-		// TODO Auto-generated method stub
+	public void update(GameContainer container, StateBasedGame stateBasedGame,
+			int delta) throws SlickException {
+		Game game = (Game) stateBasedGame;
+
 		playerTable.update(container, (Game) game, delta);
 		table.update(container, (Game) game, delta);
+		
+		if(game.getRunnibkubController().getEndGame() != null) {
+			game.enterState(EndGameState.ID);
+		}
+		
 	}
 
 	@Override
@@ -51,7 +59,7 @@ public class GameState extends BasicGameState {
 
 	public void unpause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
