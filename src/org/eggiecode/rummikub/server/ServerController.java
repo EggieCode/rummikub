@@ -13,4 +13,9 @@ public class ServerController {
 	public ServerController() {
 		
 	}
+	
+	public void startGame() {
+		stones.clear();
+		
+	}
 }

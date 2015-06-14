@@ -25,6 +25,7 @@ public class GameState extends BasicGameState {
 		playerTable.init(container,  game);
 		
 		table =new TableModel();
+		table.init(container, game);
 	}
 
 	@Override
@@ -32,6 +33,7 @@ public class GameState extends BasicGameState {
 			throws SlickException {
 		// TODO Auto-generated method stub
 		playerTable.draw(container, (Game) game, g);
+		table.draw(container, (Game) game, g);
 	}
 
 	@Override
@@ -39,6 +41,7 @@ public class GameState extends BasicGameState {
 			throws SlickException {
 		// TODO Auto-generated method stub
 		playerTable.update(container, (Game) game, delta);
+		table.update(container, (Game) game, delta);
 	}
 
 	@Override

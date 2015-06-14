@@ -47,7 +47,7 @@ public class GameModelController {
 		return playerStoneModels;
 	}
 
-	public ArrayList<StoneSetModel> getTableStoneSets() {
+	public ArrayList<StoneSetModel> getTableStoneSets() throws SlickException {
 		for (StoneSet s : rummikubController.getTable().getStoneSets()) {
 			StoneSetModel stoneSetModel = getStoneSetModel(s);
 
@@ -60,7 +60,7 @@ public class GameModelController {
 		return tableStoneSetModels;
 	}
 
-	private StoneModel getStoneModel(Stone s) throws SlickException {
+	public StoneModel getStoneModel(Stone s) throws SlickException {
 		for (StoneModel stoneModel : stoneModels) {
 			if (stoneModel.getStone() == s)
 				return stoneModel;
@@ -72,7 +72,7 @@ public class GameModelController {
 		return stoneModel;
 	}
 
-	private StoneSetModel getStoneSetModel(StoneSet s) {
+	private StoneSetModel getStoneSetModel(StoneSet s) throws SlickException {
 		for (StoneSetModel stoneSetModel : stoneSetModels) {
 			if (stoneSetModel.getStoneSet() == s)
 				return stoneSetModel;
@@ -81,6 +81,10 @@ public class GameModelController {
 		StoneSetModel stoneSetModel = new StoneSetModel(s);
 
 		stoneSetModels.add(stoneSetModel);
+		for(Stone stone : s.getStones()){
+			stoneSetModel.add(this.getStoneModel(stone));
+		}
+		stoneSetModel.init(Client.appgc, Client.game);
 		return stoneSetModel;
 
 	}
