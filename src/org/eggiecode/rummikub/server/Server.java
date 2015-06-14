@@ -15,16 +15,19 @@ public class Server {
 	ServerSocket serverSocket;
 	private RunnikubController runnikubController;
 
+	private ServerController controler;
+	ClientPlayer task;
+
 	public static void main(String[] args) throws UnknownHostException {
 		TestBoardcastClient t = new TestBoardcastClient();
 		new Thread(t).start();
-		new Server();
 
 	}
 
 	public Server() {
 		this.runnikubController = new RunnikubController();
 		this.runnikubController.startGame();
+		controler = new ServerController(this);
 
 		try {
 			serverSocket = new ServerSocket(8000);
@@ -39,7 +42,9 @@ public class Server {
 				ClientPlayer task = new ClientPlayer(socket);
 				new Thread(task).start();
 				System.out.println("New client connected");
-
+				if (task != null) {
+					controler.addClient(task);
+				}
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -83,10 +88,10 @@ class TestBoardcastClient implements Runnable {
 								+ msgPacket.getAddress().getHostAddress()
 								+ "): " + msg);
 				String sReply = "Welcom "
-								+ msgPacket.getAddress().getHostAddress();
+						+ msgPacket.getAddress().getHostAddress();
 
-				
-				reply = new DatagramPacket(sReply.getBytes(), sReply.length(), msgPacket.getSocketAddress());
+				reply = new DatagramPacket(sReply.getBytes(), sReply.length(),
+						msgPacket.getSocketAddress());
 				clientSocket.send(reply);
 				System.out.println("Reply send");
 			}
