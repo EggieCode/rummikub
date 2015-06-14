@@ -56,7 +56,7 @@ public class StoneModel implements GameModel {
 		} else {
 			textPosition = new Vector2f(20, 18);
 		}
-		border = new Rectangle(position.x - 1, position.y - 1, 51, 76);
+		border = new Rectangle(position.x , position.y - 1, 50, 75);
 		isInitialized = true;
 		if (position == null)
 			position = new Vector2f();
