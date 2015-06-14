@@ -21,10 +21,7 @@ public class ServerController {
 			0xC48206, 0x0 };
 	private static final int numbers[] = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9,
 			10, 11, 12, 13 };
-<<<<<<< HEAD
 	private Send_Receive s_r = new Send_Receive();
-=======
->>>>>>> c3f09fb2fd84ce3646717847900645f713b659c0
 
 	public ServerController(Server server) {
 		table = new Table();
@@ -38,7 +35,6 @@ public class ServerController {
 			stones.add(new Stone(-1, colors[i]));
 		}
 
-<<<<<<< HEAD
 	}
 
 	public void addClient(ClientPlayer player) {
@@ -58,40 +54,43 @@ public class ServerController {
 		return beginStones;
 	}
 
-	public void nextturn(int playNum){
-		switch(playNum){
-		case 1: s_r.sendTurn(clients.get(0).getObjectOutput(), false);s_r.sendTurn(clients.get(1).getObjectOutput(), true);	s_r.sendPutTable(clients.get(0).getObjectOutput(),  table);	playerOnTurn = 1;
-		break;
-		case 2:	s_r.sendTurn(clients.get(1).getObjectOutput(), true);s_r.sendTurn(clients.get(0).getObjectOutput(), false);	s_r.sendPutTable(clients.get(1).getObjectOutput(),  table);	playerOnTurn = 2	;
-		break;
+	public void nextturn(int playNum) {
+		switch (playNum) {
+		case 1:
+			s_r.sendTurn(clients.get(0).getObjectOutput(), false);
+			s_r.sendTurn(clients.get(1).getObjectOutput(), true);
+			s_r.sendPutTable(clients.get(0).getObjectOutput(), table);
+			playerOnTurn = 1;
+			break;
+		case 2:
+			s_r.sendTurn(clients.get(1).getObjectOutput(), true);
+			s_r.sendTurn(clients.get(0).getObjectOutput(), false);
+			s_r.sendPutTable(clients.get(1).getObjectOutput(), table);
+			playerOnTurn = 2;
+			break;
 		}
 
-		
 	}
-	public void getPutTable(){
-		switch(playerOnTurn){
-		case 1:s_r.receivePutTable(clients.get(0).getObjectInput()) ; 
-		case 2:s_r.receivePutTable(clients.get(1).getObjectInput()) ;
+
+	public void getPutTable() {
+		switch (playerOnTurn) {
+		case 1:
+			s_r.receivePutTable(clients.get(0).getObjectInput());
+		case 2:
+			s_r.receivePutTable(clients.get(1).getObjectInput());
 		}
 	}
+
 	public void SendBeginStones() {
 		generateBeginStones();
 		s_r.sendBeginStones(clients.get(0).getObjectOutput(), beginStones);
 		generateBeginStones();
 		s_r.sendBeginStones(clients.get(1).getObjectOutput(), beginStones);
-=======
 	}
 
 	public void startGame() {
 		stones.clear();
 
-	}
-
-	public void addClient(ClientPlayer player) {
-		if (clients.size() < 2) {
-			clients.add(player);
-		}
->>>>>>> c3f09fb2fd84ce3646717847900645f713b659c0
 	}
 
 }

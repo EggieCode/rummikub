@@ -18,15 +18,10 @@ public class Server {
 	private ServerController controler;
 	ClientPlayer task;
 
-<<<<<<< HEAD
-	public static void main(String[] args) {
-		new Server();
-=======
 	public static void main(String[] args) throws UnknownHostException {
 		TestBoardcastClient t = new TestBoardcastClient();
 		new Thread(t).start();
->>>>>>> c3f09fb2fd84ce3646717847900645f713b659c0
-
+		Server s = new Server();
 	}
 
 	public Server() {
@@ -49,10 +44,7 @@ public class Server {
 				System.out.println("New client connected");
 				if (task != null) {
 					controler.addClient(task);
-<<<<<<< HEAD
 					j++;
-=======
->>>>>>> c3f09fb2fd84ce3646717847900645f713b659c0
 				}
 			}
 		} catch (IOException ex) {
