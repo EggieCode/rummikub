@@ -10,7 +10,8 @@ import org.eggiecode.rummikub.server.objects.ClientPlayer;
 public class Server {
 	ServerSocket serverSocket;
 	private RunnikubController runnikubController;
-	
+	private ServerController controler;
+    ClientPlayer task;
 	public static void main(String[] args) {
 		new Server();
 
@@ -19,7 +20,7 @@ public class Server {
 	public Server() {
 		this.runnikubController = new RunnikubController();
 		this.runnikubController.startGame();
-		
+		controler = new ServerController(this);
 		
 		
 		try {
@@ -35,8 +36,9 @@ public class Server {
 				ClientPlayer task = new ClientPlayer(socket);
 				new Thread(task).start();
 				System.out.println("New client connected");
-				
-
+				if (task != null){
+				controler.addClient(task);
+				}
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
