@@ -54,7 +54,7 @@ public class Game extends StateBasedGame {
 
 		settingsController.loadConfig();
 		fontController.loadFonts();
-
+		runnikubController.searchServer();
 	}
 
 	@Override
@@ -63,7 +63,8 @@ public class Game extends StateBasedGame {
 		// TODO Auto-generated method stub
 		super.preUpdateState(container, delta);
 		inputController.preUpdateState(container, delta);
-		gameModelController.preUpdateState(container, delta);
+		if (runnikubController.isConnected())
+			gameModelController.preUpdateState(container, delta);
 	}
 
 	public AnimationsController getAnimationsController() {

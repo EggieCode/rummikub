@@ -18,12 +18,12 @@ public class ClientPlayer implements Runnable {
 	private Player player;
 	private ObjectInputStream OinputStream;
 	private ObjectOutputStream OoutStream;
-	
+
 	public ClientPlayer(Socket socket, int playerNum) throws IOException {
-		
+
 		this.player = new Player();
 		this.socket = socket;
-		
+
 		inputStream = new DataInputStream(socket.getInputStream());
 		outStream = new DataOutputStream(socket.getOutputStream());
 		OinputStream = new ObjectInputStream(socket.getInputStream());
@@ -33,33 +33,45 @@ public class ClientPlayer implements Runnable {
 	@Override
 	public void run() {
 		try {
-			//int b;
-			//while ((b = inputStream.read()) != -1) {
-			//	System.out.println(b);
+			Object o;
+			while ((o = OinputStream.readObject()) != null) {
+				if(o instanceof Command) {
+					Command c = (Command)o;
+					
+					if(c.getCommand() == "NextTurn") {
+						
+					}
+				}
+			}
 
-			//}
-			outStream.writeInt(playerNum);
-			
 		} catch (IOException e) {
+
 			System.err.println(e);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
-	public DataInputStream getDataInput(){
+
+	public DataInputStream getDataInput() {
 		return inputStream;
-		
+
 	}
-	public DataOutputStream getDataOutput(){
+
+	public DataOutputStream getDataOutput() {
 		return outStream;
-		
+
 	}
-	public ObjectInputStream getObjectInput(){
+
+	public ObjectInputStream getObjectInput() {
 		return OinputStream;
-		
+
 	}
-	public ObjectOutputStream getObjectOutput(){
+
+	public ObjectOutputStream getObjectOutput() {
 		return OoutStream;
-		
+
 	}
-	
+
 }

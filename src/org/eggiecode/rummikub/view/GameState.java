@@ -20,12 +20,11 @@ public class GameState extends BasicGameState {
 			throws SlickException {
 		// TODO Auto-generated method stub
 		Game game = (Game) stateBasedGame;
-		game.getRunnibkubController().startGame();
 		playerTable = new PlayerTable();
-		playerTable.init(container,  game);
+//		playerTable.init(container,  game);
 		
 		table =new TableModel();
-		table.init(container, game);
+//		table.init(container, game);
 	}
 
 	@Override

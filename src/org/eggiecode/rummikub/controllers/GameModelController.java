@@ -15,9 +15,9 @@ import org.newdawn.slick.SlickException;
 public class GameModelController {
 	private RunnikubController rummikubController;
 
-	private ArrayList<StoneModel> stoneModels = new ArrayList();
-	private ArrayList<StoneSetModel> stoneSetModels = new ArrayList();
-	private ArrayList<StoneSetModel> tableStoneSetModels = new ArrayList();
+	private ArrayList<StoneModel> stoneModels = new ArrayList<>();
+	private ArrayList<StoneSetModel> stoneSetModels = new ArrayList<>();
+	private ArrayList<StoneSetModel> tableStoneSetModels = new ArrayList<>();
 	private ArrayList<StoneModel> playerStoneModels = new ArrayList<>();
 	private int updateDelay = 0;
 	private boolean stonesUpdated = false;
